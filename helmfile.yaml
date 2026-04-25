@@ -7,40 +7,54 @@ repositories:
     url: https://kubernetes-sigs.github.io/headlamp/
   - name: jetstack
     url: https://charts.jetstack.io
+  - name: bedag
+    url: https://bedag.github.io/helm-charts/
   - name: prometheus-community
     url: https://prometheus-community.github.io/helm-charts
   - name: grafana
     url: https://grafana.github.io/helm-charts
 
 releases:
+  - name: cert-manager
+    namespace: cert-manager
+    chart: jetstack/cert-manager
+    version: v1.20.2
+    set:
+      - name: crds.enabled
+        value: true
+
+  - name: cert-manager-issuers
+    namespace: cert-manager
+    chart: ./charts/cert-manager-issuers
+    needs:
+      - cert-manager
+
   - name: my-headlamp
     namespace: kube-system
     chart: headlamp/headlamp
     version: 0.41.0
+    needs:
+      - cert-manager/cert-manager-issuers
     values:
       - replicaCount: 2
         ingress:
           enabled: true
           ingressClassName: traefik
           hosts:
-            - host: grafana.192.168.0.109.sslip.io
+            - host: headlamp.192.168.0.109.sslip.io
               paths:
                 - path: /
                   type: ImplementationSpecific
+          tls:
+            - secretName: headlamp-wildcard-tls
+              hosts:
+                - headlamp.192.168.0.109.sslip.io
 
   - name: kube-prometheus-stack
     namespace: prometheus
     chart: prometheus-community/kube-prometheus-stack
     version: 57.2.0
     disableValidationOnInstall: true
-
-  - name: cert-manager
-    namespace: cert-manager
-    chart: jetstack/cert-manager
-    version: v1.20.2
-    values:
-      - crds:
-          enabled: true
 
   - name: mkubernetes-monitoring
     namespace: monitoring

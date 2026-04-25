@@ -1,0 +1,20 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-sslip-io
+  namespace: kube-system
+spec:
+  secretName: headlamp-wildcard-tls
+  dnsNames:
+    - "*.192.168.0.109.sslip.io"
+    - "192.168.0.109.sslip.io"
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
