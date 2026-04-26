@@ -1,0 +1,8 @@
+grafana:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - grafana.192.168.0.109.sslip.io
+    path: /
+    # No TLS block needed as Traefik will use the default wildcard certificate

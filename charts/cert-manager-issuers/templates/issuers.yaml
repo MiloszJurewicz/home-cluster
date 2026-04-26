@@ -9,12 +9,34 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: wildcard-sslip-io
-  namespace: kube-system
+  namespace: kube-system # Same as Traefik
 spec:
-  secretName: headlamp-wildcard-tls
+  secretName: default-tls-cert
+  isCA: true
+  subject:
+    organizations:
+      - "Quack Cluster"
+    organizationalUnits:
+      - "Quackerspace"
+    countries:
+      - "PL"
+    provinces:
+      - "Silesia"
+    localities:
+      - "Warsaw"
+  commonName: "*.192.168.0.109.sslip.io"
   dnsNames:
     - "*.192.168.0.109.sslip.io"
     - "192.168.0.109.sslip.io"
   issuerRef:
     name: selfsigned-issuer
     kind: ClusterIssuer
+---
+apiVersion: traefik.io/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: kube-system
+spec:
+  defaultCertificate:
+    secretName: default-tls-cert
