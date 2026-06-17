@@ -11,47 +11,43 @@ repositories:
     url: https://prometheus-community.github.io/helm-charts
   - name: grafana
     url: https://grafana.github.io/helm-charts
+  - name: mojo2600
+    url: https://mojo2600.github.io/pihole-kubernetes/
+  - name: metallb
+    url: https://metallb.github.io/metallb
 
 releases:
-  - name: cert-manager
-    namespace: cert-manager
-    chart: jetstack/cert-manager
-    version: v1.20.2
-    set:
-      - name: crds.enabled
-        value: true
-
-  - name: cert-manager-issuers
-    namespace: cert-manager
-    chart: ./charts/cert-manager-issuers
+  - name: metallb
+    namespace: metallb-system
+    chart: metallb/metallb
+    version: 0.16.1
+  - name: metallb-pool
     needs:
-      - cert-manager
-
+      - metallb
+    namespace: metallb-system
+    chart: ./charts/metallb-pool
+    values:
+      - ./values/metallb-pool.values.yaml
+  - name: pihole
+    namespace: pihole
+    chart: mojo2600/pihole
+    version: 2.36.0
+    values:
+      - ./values/pihole.values.yaml
   - name: my-headlamp
     namespace: kube-system
     chart: headlamp/headlamp
     version: 0.41.0
-    needs:
-      - cert-manager/cert-manager-issuers
-    values:
-      - replicaCount: 2
-        ingress:
-          enabled: true
-          ingressClassName: traefik
-          hosts:
-            - host: headlamp.192.168.0.109.sslip.io
-              paths:
-                - path: /
-                  type: ImplementationSpecific
 
-  - name: kube-prometheus-stack
-    namespace: prometheus
-    chart: prometheus-community/kube-prometheus-stack
-    version: 57.2.0
-    disableValidationOnInstall: true
-    values:
-      - ./values/grafana.values.yaml
-
-  - name: mkubernetes-monitoring
-    namespace: monitoring
-    chart: grafana/alloy
+    # needs:
+    #   - cert-manager/cert-manager-issuers
+    # values:
+    #   - replicaCount: 2
+    #     ingress:
+    #       enabled: true
+    #       ingressClassName: traefik
+    #       hosts:
+    #         - host: headlamp.192.168.0.109.sslip.io
+    #           paths:
+    #             - path: /
+    #               type: ImplementationSpecific

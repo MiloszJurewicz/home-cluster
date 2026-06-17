@@ -1,0 +1,16 @@
+persistentVolumeClaim:
+  enabled: true
+
+serviceWeb:
+  annotations:
+    metallb.universe.tf/address-pool: pihole-pool
+    metallb.universe.tf/loadBalancerIPs: 192.168.0.51
+    metallb.universe.tf/allow-shared-ip: pihole-svc
+  type: LoadBalancer
+
+serviceDns:
+  annotations:
+    metallb.universe.tf/address-pool: pihole-pool
+    metallb.universe.tf/loadBalancerIPs: 192.168.0.52
+    metallb.universe.tf/allow-shared-ip: pihole-svc
+  type: LoadBalancer
