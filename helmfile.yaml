@@ -43,7 +43,7 @@ releases:
       - ./values/pihole.values.yaml
   - name: manifests
     namespace: pihole
-    chart: ./manifests/pihole-admin-secret
+    chart: ./manifests
   - name: my-headlamp
     namespace: kube-system
     chart: headlamp/headlamp
