@@ -4,6 +4,7 @@ provider:
 sources:
   - service
   - ingress
+  - traefik-proxy
 
 policy: upsert-only
 registry: noop
