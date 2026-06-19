@@ -8,35 +8,35 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: wildcard-sslip-io
-  namespace: kube-system # Same as Traefik
+  name: {{ .Values.certificate.name }}
+  namespace: {{ .Values.certificate.namespace }}
 spec:
-  secretName: default-tls-cert
+  secretName: {{ .Values.certificate.secretName }}
   isCA: true
   subject:
     organizations:
-      - "Quack Cluster"
+{{ toYaml .Values.certificate.subject.organizations | indent 6 }}
     organizationalUnits:
-      - "Quackerspace"
+{{ toYaml .Values.certificate.subject.organizationalUnits | indent 6 }}
     countries:
-      - "PL"
+{{ toYaml .Values.certificate.subject.countries | indent 6 }}
     provinces:
-      - "Silesia"
+{{ toYaml .Values.certificate.subject.provinces | indent 6 }}
     localities:
-      - "Warsaw"
-  commonName: "*.192.168.0.109.sslip.io"
+{{ toYaml .Values.certificate.subject.localities | indent 6 }}
+  commonName: {{ .Values.certificate.commonName | quote }}
   dnsNames:
-    - "*.192.168.0.109.sslip.io"
-    - "192.168.0.109.sslip.io"
+{{ toYaml .Values.certificate.dnsNames | indent 4 }}
   issuerRef:
     name: selfsigned-issuer
     kind: ClusterIssuer
 ---
+# Traefik will use this TLSStore to serve the default certificate for any TLS request that doesn't match a specific TLSRoute
 apiVersion: traefik.io/v1alpha1
 kind: TLSStore
 metadata:
   name: default
-  namespace: kube-system
+  namespace: {{ .Values.certificate.namespace }}
 spec:
   defaultCertificate:
-    secretName: default-tls-cert
+    secretName: {{ .Values.certificate.secretName }}
