@@ -1,0 +1,21 @@
+provider:
+  name: pihole
+
+sources:
+  - service
+  - ingress
+
+policy: upsert-only
+registry: noop
+interval: 1m
+
+env:
+  - name: EXTERNAL_DNS_PIHOLE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: pihole-admin
+        key: password
+
+extraArgs:
+  pihole-server: http://pihole-web.pihole.svc.cluster.local
+  pihole-api-version: "6"

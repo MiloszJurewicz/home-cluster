@@ -15,6 +15,8 @@ repositories:
     url: https://mojo2600.github.io/pihole-kubernetes/
   - name: metallb
     url: https://metallb.github.io/metallb
+  - name : external-dns
+    url: https://kubernetes-sigs.github.io/external-dns/
 
 releases:
   - name: metallb
@@ -31,7 +33,9 @@ releases:
   - name: pihole-admin-secret
     namespace: pihole
     chart: ./manifests/pihole-admin-secret
-
+  - name: pihole-admin-secret-kube-system
+    namespace: kube-system
+    chart: ./manifests/pihole-admin-secret
   - name: pihole
     needs:
       - pihole-admin-secret
@@ -40,6 +44,14 @@ releases:
     version: 2.36.0
     values:
       - ./values/pihole.values.yaml
+  - name: external-dns
+    needs:
+      - pihole-admin-secret-kube-system
+    namespace: kube-system
+    chart: external-dns/external-dns
+    version: 1.21.1
+    values:
+      - ./values/external-dns.values.yaml
   - name: my-headlamp
     namespace: kube-system
     chart: headlamp/headlamp
