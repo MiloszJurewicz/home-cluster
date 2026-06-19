@@ -30,9 +30,8 @@ releases:
       - ./values/metallb-pool.values.yaml
   - name: pihole-admin-secret
     namespace: pihole
-    chart: ./charts/pihole-admin-secret
-    values:
-      - ./values/pihole-admin-secret.values.yaml
+    chart: ./manifests/pihole-admin-secret
+
   - name: pihole
     needs:
       - pihole-admin-secret
@@ -41,9 +40,6 @@ releases:
     version: 2.36.0
     values:
       - ./values/pihole.values.yaml
-  - name: manifests
-    namespace: pihole
-    chart: ./manifests
   - name: my-headlamp
     namespace: kube-system
     chart: headlamp/headlamp
