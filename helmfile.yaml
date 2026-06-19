@@ -17,6 +17,9 @@ repositories:
     url: https://metallb.github.io/metallb
   - name : external-dns
     url: https://kubernetes-sigs.github.io/external-dns/
+  - name: jetstack
+    url: https://charts.jetstack.io
+
 
 releases:
   - name: metallb
@@ -52,6 +55,38 @@ releases:
     version: 1.21.1
     values:
       - ./values/external-dns.values.yaml
+  - name: cert-manager
+    namespace: cert-manager
+    createNamespace: true
+    chart: jetstack/cert-manager
+    version: 1.20.2
+    set:
+      - name: installCRDs
+        value: true
+  - name: cert-manager-issuers
+    needs:
+      - cert-manager
+    namespace: cert-manager
+    chart: ./charts/cert-manager-issuers
+    values:
+      - certificate:
+          name: wildcard-home-arpa
+          namespace: kube-system
+          secretName: default-tls-cert
+          subject:
+            organizations:
+              - "Quack Cluster"
+            organizationalUnits:
+              - "Quackerspace"
+            countries:
+              - "PL"
+            provinces:
+              - "Silesia"
+            localities:
+              - "Warsaw"
+          commonName: "*.home.arpa"
+          dnsNames:
+            - "*.home.arpa"
   - name: my-headlamp
     namespace: kube-system
     chart: headlamp/headlamp
