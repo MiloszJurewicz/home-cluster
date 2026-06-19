@@ -28,7 +28,14 @@ releases:
     chart: ./charts/metallb-pool
     values:
       - ./values/metallb-pool.values.yaml
+  - name: pihole-admin-secret
+    namespace: pihole
+    chart: ./charts/pihole-admin-secret
+    values:
+      - ./values/pihole-admin-secret.values.yaml
   - name: pihole
+    needs:
+      - pihole-admin-secret
     namespace: pihole
     chart: mojo2600/pihole
     version: 2.36.0

@@ -1,6 +1,11 @@
 persistentVolumeClaim:
   enabled: true
 
+admin:
+  enabled: true
+  existingSecret: pihole-admin
+  passwordKey: password
+
 serviceWeb:
   annotations:
     metallb.universe.tf/address-pool: pihole-pool
