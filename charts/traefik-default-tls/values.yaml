@@ -1,0 +1,4 @@
+tlsStore:
+  name: default
+  namespace: cert-manager
+  secretName: ""
