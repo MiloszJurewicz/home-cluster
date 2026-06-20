@@ -1,0 +1,27 @@
+enableRbac: true
+
+serviceAccount:
+  create: true
+
+ingress:
+  main:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: home.arpa
+    hosts:
+      - host: home.arpa
+        paths:
+          - path: /
+            pathType: Prefix
+
+config:
+  kubernetes:
+    mode: cluster
+  settingsString: |
+    title: Home
+    headerStyle: boxed
+
+env:
+  - name: HOMEPAGE_ALLOWED_HOSTS
+    value: home.arpa

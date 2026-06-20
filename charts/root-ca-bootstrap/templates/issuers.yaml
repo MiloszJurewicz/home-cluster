@@ -32,7 +32,7 @@ spec:
 {{ toYaml .Values.certificate.subject.provinces | indent 6 }}
     localities:
 {{ toYaml .Values.certificate.subject.localities | indent 6 }}
-  commonName: {{ .Values.certificate.rootDomain | quote }}
+  commonName: {{ .Values.certificate.rootCommonName | default .Values.certificate.rootDomain | quote }}
   dnsNames:
     - {{ .Values.certificate.rootDomain | quote }}
     - {{ printf "*.%s" .Values.certificate.rootDomain | quote }}

@@ -4,6 +4,7 @@ certificate:
   secretName: root-ca-secret
   issuerName: root-ca-issuer
   rootDomain: {{ .Environment.Values.rootDomain }}
+  rootCommonName: Quack Cluster Root CA
   subject:
     organizations:
       - "Quack Cluster"

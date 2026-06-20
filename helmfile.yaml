@@ -80,20 +80,23 @@ releases:
       - ./values/root-ca-bootstrap.values.yaml.gotmpl
   - name: leaf-cert
     needs:
-      - root-ca-bootstrap
-    namespace: cert-manager
+      - cert-manager/root-ca-bootstrap
+    namespace: kube-system
     chart: ./charts/leaf-cert
+    set:
+      - name: certificate.namespace
+        value: kube-system
     values:
       - ./values/leaf-cert.values.yaml.gotmpl
   - name: traefik-default-tls
     needs:
-      - cert-manager/leaf-cert
-    namespace: cert-manager
+      - kube-system/leaf-cert
+    namespace: kube-system
     chart: ./charts/traefik-default-tls
     values:
       - tlsStore:
           name: default
-          namespace: cert-manager
+          namespace: kube-system
           secretName: default-tls-cert
 
 # ---
