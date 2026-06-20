@@ -1,6 +1,5 @@
 certificate:
   name: root-ca
-  namespace: cert-manager
   secretName: root-ca-secret
   issuerName: root-ca-issuer
   rootDomain: {{ .Environment.Values.rootDomain }}
