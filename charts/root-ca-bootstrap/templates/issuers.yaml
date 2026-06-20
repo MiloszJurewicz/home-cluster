@@ -1,9 +1,17 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: selfsigned-issuer
+  name: {{ .Values.certificate.selfSignedIssuerName }}
 spec:
   selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ .Values.certificate.issuerName }}
+spec:
+  ca:
+    secretName: {{ .Values.certificate.secretName }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -24,19 +32,10 @@ spec:
 {{ toYaml .Values.certificate.subject.provinces | indent 6 }}
     localities:
 {{ toYaml .Values.certificate.subject.localities | indent 6 }}
-  commonName: {{ .Values.certificate.commonName | quote }}
+  commonName: {{ .Values.certificate.rootDomain | quote }}
   dnsNames:
-{{ toYaml .Values.certificate.dnsNames | indent 4 }}
+    - {{ .Values.certificate.rootDomain | quote }}
+    - {{ printf "*.%s" .Values.certificate.rootDomain | quote }}
   issuerRef:
-    name: selfsigned-issuer
+    name: {{ .Values.certificate.selfSignedIssuerName }}
     kind: ClusterIssuer
----
-# Traefik will use this TLSStore to serve the default certificate for any TLS request that doesn't match a specific TLSRoute
-apiVersion: traefik.io/v1alpha1
-kind: TLSStore
-metadata:
-  name: default
-  namespace: {{ .Values.certificate.namespace }}
-spec:
-  defaultCertificate:
-    secretName: {{ .Values.certificate.secretName }}

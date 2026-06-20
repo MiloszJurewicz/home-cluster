@@ -1,6 +1,6 @@
 apiVersion: v2
 name: leaf-cert
-description: Generic leaf certificate and Traefik TLSStore for any root domain
+description: Generic leaf certificate for any root domain
 type: application
 version: 0.1.0
 appVersion: "1.0.0"
