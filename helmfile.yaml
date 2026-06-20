@@ -85,6 +85,16 @@ releases:
     chart: ./charts/leaf-cert
     values:
       - ./values/leaf-cert.values.yaml.gotmpl
+  - name: traefik-default-tls
+    needs:
+      - cert-manager/leaf-cert
+    namespace: cert-manager
+    chart: ./charts/traefik-default-tls
+    values:
+      - tlsStore:
+          name: default
+          namespace: cert-manager
+          secretName: default-tls-cert
 
 # ---
 # Could be separate helmfile
