@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Install the cert-manager-issued root CA certificate into the local system trust store.
+# Install the root CA certificate into the local system trust store.
 # Override defaults via environment variables, e.g.:
-#   CERT_NAME=root-ca SECRET_NAME=root-ca-secret ./install-cert-trust-store.sh
+#   CERT_NAME=root-ca SECRET_NAME=root-ca-secret ./install-root-ca-trust-store.sh
 
 NAMESPACE="${NAMESPACE:-kube-system}"
 SECRET_NAME="${SECRET_NAME:-root-ca-secret}"

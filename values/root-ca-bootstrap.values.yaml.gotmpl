@@ -1,0 +1,17 @@
+certificate:
+  name: root-ca
+  namespace: kube-system
+  secretName: root-ca-secret
+  issuerName: root-ca-issuer
+  rootDomain: {{ .Environment.Values.rootDomain }}
+  subject:
+    organizations:
+      - "Quack Cluster"
+    organizationalUnits:
+      - "Quackerspace"
+    countries:
+      - "PL"
+    provinces:
+      - "Silesia"
+    localities:
+      - "Warsaw"
