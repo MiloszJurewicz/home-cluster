@@ -1,0 +1,6 @@
+certificate:
+  name: leaf-cert
+  namespace: kube-system
+  secretName: default-tls-cert
+  issuerName: root-ca-issuer
+  rootDomain: {{ .Environment.Values.rootDomain }}

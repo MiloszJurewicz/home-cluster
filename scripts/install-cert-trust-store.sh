@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Install the cert-manager-issued certificate into the local system trust store.
-# Defaults match the values defined in helmfile.yaml for cert-manager-issuers.
+# Install the cert-manager-issued root CA certificate into the local system trust store.
+# Override defaults via environment variables, e.g.:
+#   CERT_NAME=root-ca SECRET_NAME=root-ca-secret ./install-cert-trust-store.sh
 
 NAMESPACE="${NAMESPACE:-kube-system}"
-SECRET_NAME="${SECRET_NAME:-default-tls-cert}"
-CERT_NAME="${CERT_NAME:-wildcard-home-arpa}"
+SECRET_NAME="${SECRET_NAME:-root-ca-secret}"
+CERT_NAME="${CERT_NAME:-root-ca}"
 TRUST_STORE_DIR="${TRUST_STORE_DIR:-/usr/local/share/ca-certificates}"
 TRUST_STORE_FILE="${TRUST_STORE_FILE:-${CERT_NAME}.crt}"
 

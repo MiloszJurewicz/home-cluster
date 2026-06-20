@@ -1,18 +1,2 @@
 certificate:
-  name: wildcard-home-arpa
-  namespace: kube-system
-  secretName: default-tls-cert
-  subject:
-    organizations:
-      - "Quack Cluster"
-    organizationalUnits:
-      - "Quackerspace"
-    countries:
-      - "PL"
-    provinces:
-      - "Silesia"
-    localities:
-      - "Warsaw"
-  commonName: "*.home.arpa"
-  dnsNames:
-    - "*.home.arpa"
+  selfSignedIssuerName: root-ca-bootstrap-issuer
