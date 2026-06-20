@@ -32,6 +32,8 @@ spec:
 {{ toYaml .Values.certificate.subject.provinces | indent 6 }}
     localities:
 {{ toYaml .Values.certificate.subject.localities | indent 6 }}
+  duration: {{ .Values.certificate.duration | default "87600h" }}
+  renewBefore: {{ .Values.certificate.renewBefore | default "720h" }}
   commonName: {{ .Values.certificate.rootCommonName | default .Values.certificate.rootDomain | quote }}
   dnsNames:
     - {{ .Values.certificate.rootDomain | quote }}

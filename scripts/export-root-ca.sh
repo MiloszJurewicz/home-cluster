@@ -6,7 +6,7 @@ set -euo pipefail
 # Override defaults via environment variables, e.g.:
 #   CERT_NAME=root-ca SECRET_NAME=root-ca-secret ./export-root-ca.sh
 
-NAMESPACE="${NAMESPACE:-kube-system}"
+NAMESPACE="${NAMESPACE:-cert-manager}"
 SECRET_NAME="${SECRET_NAME:-root-ca-secret}"
 CERT_NAME="${CERT_NAME:-root-ca}"
 OUTPUT_PATH="${OUTPUT_PATH:-${CERT_NAME}.crt}"
