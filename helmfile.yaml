@@ -122,3 +122,6 @@ releases:
     chart: jameswynn/homepage
     values:
       - ./values/homepage.values.yaml
+  - name: ngnix-test
+    namespace: default
+    chart: ./manifests/ngnix-test

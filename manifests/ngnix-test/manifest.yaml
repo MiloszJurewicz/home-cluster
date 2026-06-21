@@ -33,3 +33,44 @@ spec:
         ports:
         - containerPort: 80
           name: http
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: ngnix-strip-prefix
+  namespace: default
+spec:
+  stripPrefix:
+    prefixes:
+      - /ngnix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx
+  namespace: default
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-ngnix-strip-prefix@kubernetescrd
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: Nginx
+    gethomepage.dev/description: Nginx Test
+    gethomepage.dev/group: Services
+    gethomepage.dev/icon: nginx.png
+    gethomepage.dev/href: "https://home.arpa/ngnix"
+    gethomepage.dev/pod-selector: "app=nginx"
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - home.arpa
+  rules:
+    - host: home.arpa
+      http:
+        paths:
+          - path: /ngnix
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx
+                port:
+                  number: 80
