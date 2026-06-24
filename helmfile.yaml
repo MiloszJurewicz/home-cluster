@@ -11,6 +11,8 @@ environments:
 repositories:
   - name: headlamp
     url: https://kubernetes-sigs.github.io/headlamp/
+  - name: grafana-community
+    url: https://grafana-community.github.io/helm-charts
   - name: jetstack
     url: https://charts.jetstack.io
   - name: prometheus-community
@@ -99,10 +101,10 @@ releases:
 # ---
 # Could be separate helmfile
 
-  - name: my-headlamp
-    namespace: kube-system
-    chart: headlamp/headlamp
-    version: 0.41.0
+    # - name: my-headlamp
+    #   namespace: kube-system
+    #   chart: headlamp/headlamp
+    #   version: 0.41.0
 
     # needs:
     #   - cert-manager/root-ca-bootstrap
@@ -125,3 +127,23 @@ releases:
   - name: ngnix-test
     namespace: default
     chart: ./manifests/ngnix-test
+  - name: loki
+    namespace: monitoring
+    createNamespace: true
+    chart: grafana-community/loki
+    values:
+      - ./values/loki.values.yaml
+  - name: k8s-monitoring
+    needs:
+      - monitoring/loki
+    namespace: monitoring
+    chart: grafana/k8s-monitoring
+    version: 4.1.6
+    values:
+      - ./values/k8s-monitoring.values.yaml
+  - name: kps
+    namespace: monitoring
+    chart: prometheus-community/kube-prometheus-stack
+    version: 87.0.0
+    values:
+      - ./values/prometheus.values.yaml

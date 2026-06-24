@@ -1,0 +1,76 @@
+---
+# kube-prometheus-stack — Prometheus + Grafana (+ Alertmanager)
+# Collection (node-exporter, kube-state-metrics) is handled by k8s-monitoring/Alloy.
+# This chart provides: Prometheus (metrics receiver), Grafana (dashboards).
+
+# All scraping is done by Alloy. kps Prometheus is receive-only (remote write).
+# Disable every ServiceMonitor kps would create:
+nodeExporter:
+  enabled: false
+kubeStateMetrics:
+  enabled: false
+kubelet:
+  enabled: false
+kubeApiServer:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+kubeEtcd:
+  enabled: false
+coreDns:
+  enabled: false
+
+# --- Prometheus ---
+prometheus:
+  prometheusSpec:
+    # Accept remote write from Alloy
+    enableRemoteWriteReceiver: true
+    # Retention
+    retention: 7d
+    retentionSize: 15GB
+    # Persistent storage
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+
+  # --- Ingress ---
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - prometheus.home.arpa
+    paths:
+      - /
+    pathType: Prefix
+
+# --- Grafana ---
+grafana:
+  enabled: true
+  persistence:
+    enabled: true
+    storageClassName: local-path
+    size: 5Gi
+  # Pre-configure Loki as a data source
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      url: http://loki.monitoring.svc.cluster.local:3100
+      access: proxy
+  # --- Ingress ---
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - grafana.home.arpa
+    path: /
+    pathType: Prefix

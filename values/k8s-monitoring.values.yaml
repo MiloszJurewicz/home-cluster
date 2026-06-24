@@ -1,0 +1,119 @@
+---
+# k8s-monitoring — unified telemetry collection via Grafana Alloy
+# Sends logs → Loki, metrics → Prometheus
+# Alloy is the SOLE scraper — everything goes through Alloy, nothing in kps scrapes.
+# cluster label is added globally by prometheus.remote_write external_labels (derived from cluster.name).
+# NOTE: Feature keys go at the TOP LEVEL, not nested under a "features:" key
+
+cluster:
+  name: home-cluster
+
+# --- Destinations ---
+destinations:
+  loki:
+    type: loki
+    url: http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push
+  prometheus:
+    type: prometheus
+    url: http://kps-kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090/api/v1/write
+
+# --- Collectors (Alloy instances) ---
+collectors:
+  alloy-logs:
+    presets: [small, filesystem-log-reader, daemonset]
+  alloy-metrics:
+    presets: [small, deployment]
+  alloy-singleton:
+    presets: [small, deployment]
+
+# --- Features (top-level keys!) ---
+
+# === Metrics → alloy-metrics ===
+
+clusterMetrics:
+  enabled: true
+  collector: alloy-metrics
+  # All jobLabels set to match kps naming (kps recording rules/dashboards expect these)
+  # All allow-lists disabled so kps dashboards get full metric sets
+
+  kubelet:
+    metricsTuning:
+      useDefaultAllowList: false
+    jobLabel: kubelet
+
+  kubeletResource:
+    metricsTuning:
+      useDefaultAllowList: false
+
+  cadvisor:
+    metricsTuning:
+      useDefaultAllowList: false
+    jobLabel: kubelet
+    # kps recording rules filter on metrics_path="/metrics/cadvisor"
+    extraMetricProcessingRules: |
+      rule {
+        target_label = "metrics_path"
+        replacement  = "/metrics/cadvisor"
+      }
+
+  kube-state-metrics:
+    jobLabel: kube-state-metrics
+
+  # Control plane
+  apiServer:
+    enabled: true
+    jobLabel: apiserver
+
+  kubeControllerManager:
+    enabled: true
+    jobLabel: kube-controller-manager
+
+  kubeScheduler:
+    enabled: true
+    jobLabel: kube-scheduler
+
+  kubeProxy:
+    enabled: true
+    jobLabel: kube-proxy
+
+  kubeDNS:
+    enabled: true
+    jobLabel: coredns
+
+# Host metrics via node-exporter
+hostMetrics:
+  enabled: true
+  collector: alloy-metrics
+  linuxHosts:
+    enabled: true
+    jobLabel: node-exporter
+    metricsTuning:
+      useDefaultAllowList: false
+
+costMetrics:
+  enabled: false
+
+# === Logs → alloy-logs (daemonset for filesystem access) ===
+
+podLogsViaLoki:
+  enabled: true
+  collector: alloy-logs
+
+nodeLogs:
+  enabled: true
+  collector: alloy-logs
+
+# === Events → alloy-singleton ===
+
+clusterEvents:
+  enabled: true
+  collector: alloy-singleton
+
+# --- Telemetry services (deployed by this chart, scraped by Alloy) ---
+telemetryServices:
+  kube-state-metrics:
+    deploy: true
+  node-exporter:
+    deploy: true
+  opencost:
+    deploy: false
