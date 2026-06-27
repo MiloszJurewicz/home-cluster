@@ -9,7 +9,7 @@ set -euo pipefail
 NAMESPACE="${NAMESPACE:-cert-manager}"
 SECRET_NAME="${SECRET_NAME:-root-ca-secret}"
 CERT_NAME="${CERT_NAME:-root-ca}"
-OUTPUT_PATH="${OUTPUT_PATH:-${CERT_NAME}.crt}"
+OUTPUT_PATH="${OUTPUT_PATH:-certs/${CERT_NAME}.crt}"
 
 kubectl -n "$NAMESPACE" get secret "$SECRET_NAME" -o jsonpath='{.data.tls\.crt}' | base64 -d > "$OUTPUT_PATH"
 

@@ -1,9 +1,12 @@
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
+apiVersion: v1
+kind: Secret
 metadata:
-  name: {{ .Values.certificate.selfSignedIssuerName }}
-spec:
-  selfSigned: {}
+  name: {{ .Values.certificate.secretName }}
+  namespace: {{ .Release.Namespace }}
+type: kubernetes.io/tls
+data:
+  tls.crt: {{ .Values.certificate.tlsCrtB64 }}
+  tls.key: {{ .Values.certificate.tlsKeyB64 }}
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -12,32 +15,3 @@ metadata:
 spec:
   ca:
     secretName: {{ .Values.certificate.secretName }}
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: {{ .Values.certificate.name }}
-  namespace: {{ .Release.Namespace }}
-spec:
-  secretName: {{ .Values.certificate.secretName }}
-  isCA: true
-  subject:
-    organizations:
-{{ toYaml .Values.certificate.subject.organizations | indent 6 }}
-    organizationalUnits:
-{{ toYaml .Values.certificate.subject.organizationalUnits | indent 6 }}
-    countries:
-{{ toYaml .Values.certificate.subject.countries | indent 6 }}
-    provinces:
-{{ toYaml .Values.certificate.subject.provinces | indent 6 }}
-    localities:
-{{ toYaml .Values.certificate.subject.localities | indent 6 }}
-  duration: {{ .Values.certificate.duration | default "87600h" }}
-  renewBefore: {{ .Values.certificate.renewBefore | default "720h" }}
-  commonName: {{ .Values.certificate.rootCommonName | default .Values.certificate.rootDomain | quote }}
-  dnsNames:
-    - {{ .Values.certificate.rootDomain | quote }}
-    - {{ printf "*.%s" .Values.certificate.rootDomain | quote }}
-  issuerRef:
-    name: {{ .Values.certificate.selfSignedIssuerName }}
-    kind: ClusterIssuer

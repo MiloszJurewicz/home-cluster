@@ -1,2 +1,1 @@
-certificate:
-  selfSignedIssuerName: root-ca-bootstrap-issuer
+{}

@@ -4,6 +4,8 @@ certificate:
   issuerName: root-ca-issuer
   rootDomain: {{ .Environment.Values.rootDomain }}
   rootCommonName: Quack Cluster Root CA
+  tlsCrtB64: {{ readFile .Environment.Values.caCertPath | b64enc }}
+  tlsKeyB64: {{ readFile .Environment.Values.caKeyPath | b64enc }}
   subject:
     organizations:
       - "Quack Cluster"

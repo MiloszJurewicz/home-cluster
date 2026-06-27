@@ -6,6 +6,8 @@ environments:
   default:
     values:
       - rootDomain: home.arpa
+      - caCertPath: ../certs/root-ca.crt
+      - caKeyPath: ../certs/root-ca.key
 
 ---
 repositories:
