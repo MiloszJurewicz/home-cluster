@@ -59,18 +59,15 @@ Current approach: Plain manifests (manual duplication across namespaces).
 
 ## Immediate tasks
 
-- [ ] **Move Grafana `client_secret` into Kubernetes Secret** — Currently hardcoded in `values/prometheus.values.yaml`.
-  Ref: [Grafana Helm chart docs](https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/README.md#how-to-securely-reference-secrets-in-grafanaini)
-  and [Authentik integration docs](https://integrations.goauthentik.io/monitoring/grafana/).
-  - Create a Secret with the OAuth client secret
-  - Reference it via Grafana's `envValueFrom` or `secretKeyRefs`
-  - Eventually extend to Authentik's `bootstrap_password_hash` + DB password
+- [ ] **Secrets management** — Remove plaintext secrets from repo.
+  1. Create a `charts/cluster-secrets` chart that creates Kubernetes Secrets from values
+  2. Switch Grafana + Authentik to reference Secrets via `secretKeyRef`/`envValueFrom`
+  3. Then encrypt with **[Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets)**
+     (ArgoCD-native, cluster holds the key, no external services needed).
+     SOPS is simpler today but needs an ArgoCD plugin later — Sealed Secrets wins long-term.
 
-- [ ] **Groups & entitlements** — Set up Authentik groups for Grafana role mapping.
-  - Create groups via blueprint: `Grafana Admins`, `Grafana Editors`, `Grafana Viewers`
-  - Add application entitlements to the Grafana app
-  - Assign `akadmin` to `Grafana Admins` group
-  - Role mapping is already configured: `contains(entitlements[*], 'Grafana Admins') && 'Admin' || ...`
+- [ ] **Groups & entitlements** — Add blueprint entries for `Grafana Admins`/`Editors`/`Viewers`,
+  wire entitlements to the Grafana app, assign `akadmin` to Admins.
 
 ## To do
 
@@ -89,6 +86,15 @@ Current approach: Plain manifests (manual duplication across namespaces).
   - ExternalDNS community webhook available
   - Better chart: `paimonsoror/technitium-dns` — `dnsServer.blockListUrls`, `customCA`, `pfxCertificate`
   - Blocklists configurable as Helm values (unlike Pi-hole chart which requires UI)
+
+- [ ] **Document Authentik blueprint quirks** — things that bit us:
+  - OAuth2 authorize/token/userinfo URLs are **global**: `/application/o/authorize/` (no app slug in path)
+  - `redirect_uris` must be a list of objects: `[{url: "...", matching_mode: strict, type: authorization}]`, not plain strings
+  - `client_type: confidential` is required for apps with a client secret
+  - `invalidation_flow` is a required field (use `!Find` for `default-provider-invalidation-flow`)
+  - `logout_method` blueprint field only accepts `backchannel` even though UI shows "Front-channel"; logout works either way
+  - Worker task queue can get stuck (tasks enqueued but never processed) — `kubectl delete pod` fixes it
+  - `ak apply_blueprint` validates but actual save requires the Dramatiq task to process; worker restart + server restart needed for outpost sync
 
 ## Future apps
 
