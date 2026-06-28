@@ -72,11 +72,28 @@ Current approach: Plain manifests (manual duplication across namespaces).
   - Assign `akadmin` to `Grafana Admins` group
   - Role mapping is already configured: `contains(entitlements[*], 'Grafana Admins') && 'Admin' || ...`
 
+## To do
+
+- [ ] **Add intermediate CA** — Currently `leaf-cert` is signed directly by the root CA. Best practice:
+  root CA should stay offline, only sign an intermediate; the intermediate issues leaf certs.
+  - Root CA key stays on disk (`certs/`), never pushed to cluster
+  - Add intermediate CA chart (or extend `root-ca-bootstrap`) — creates an intermediate cert signed by root
+  - Switch `leaf-cert` issuer from `root-ca-issuer` → intermediate issuer
+  - Intermediate key lives in cluster; compromise doesn't require root CA rotation
+  - Browsers/OS trust root CA; cert chain is root → intermediate → leaf (3 levels)
+
+- [ ] **Technitium DNS** — replace Pi-hole. Research done:
+  - OIDC support (v15.1+) → direct Authentik integration, no ForwardAuth
+  - Native clustering (v14+) — no third-party sync tools needed
+  - Full authoritative DNS + ad blocking in one app
+  - ExternalDNS community webhook available
+  - Better chart: `paimonsoror/technitium-dns` — `dnsServer.blockListUrls`, `customCA`, `pfxCertificate`
+  - Blocklists configurable as Helm values (unlike Pi-hole chart which requires UI)
+
 ## Future apps
 
 - [ ] **Headlamp** — OIDC via Authentik (native support)
 - [ ] **Homepage** — authenticate via Authentik (OIDC or forward auth)
-- [ ] **Technitium DNS** — evaluate as Pi-hole replacement (OIDC support in v15.1+)
 
 ## Notes
 
