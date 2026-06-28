@@ -53,3 +53,39 @@ Current approach: Plain manifests (manual duplication across namespaces).
 2. **[SOPS](https://github.com/getsops/sops)**: Encrypt secrets in Git (works natively with Helmfile's `secrets` plugin).
 3. **[HashiCorp Vault](https://www.vaultproject.io/) + [External Secrets Operator](https://external-secrets.io/)**: Securely store secrets in Vault and use ESO to inject them into Kubernetes namespaces as native Secrets.
 
+---
+
+# Authentik
+
+## Immediate tasks
+
+- [ ] **Move Grafana `client_secret` into Kubernetes Secret** — Currently hardcoded in `values/prometheus.values.yaml`.
+  Ref: [Grafana Helm chart docs](https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/README.md#how-to-securely-reference-secrets-in-grafanaini)
+  and [Authentik integration docs](https://integrations.goauthentik.io/monitoring/grafana/).
+  - Create a Secret with the OAuth client secret
+  - Reference it via Grafana's `envValueFrom` or `secretKeyRefs`
+  - Eventually extend to Authentik's `bootstrap_password_hash` + DB password
+
+- [ ] **Groups & entitlements** — Set up Authentik groups for Grafana role mapping.
+  - Create groups via blueprint: `Grafana Admins`, `Grafana Editors`, `Grafana Viewers`
+  - Add application entitlements to the Grafana app
+  - Assign `akadmin` to `Grafana Admins` group
+  - Role mapping is already configured: `contains(entitlements[*], 'Grafana Admins') && 'Admin' || ...`
+
+## Future apps
+
+- [ ] **Headlamp** — OIDC via Authentik (native support)
+- [ ] **Homepage** — authenticate via Authentik (OIDC or forward auth)
+- [ ] **Technitium DNS** — evaluate as Pi-hole replacement (OIDC support in v15.1+)
+
+## Notes
+
+### Backchannel vs front-channel logout
+
+Official [Grafana integration docs](https://integrations.goauthentik.io/monitoring/grafana/)
+recommend setting the provider's **Logout Method** to `Front-channel`. However neither `front_channel`
+nor `front` is accepted by the blueprint validator (only `backchannel` is valid). The UI may expose
+a front-channel option that maps to a different internal value. Logout works correctly with
+`backchannel` in practice — revisit this if issues arise. The internal enum is in
+`authentik_providers_oauth2.models` → `LogoutMethod`.
+

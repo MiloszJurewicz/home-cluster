@@ -1,0 +1,70 @@
+blueprints:
+  configMaps:
+    - blueprint-grafana
+
+authentik:
+  secret_key: "5f68e926e9131d4043432725a8a0c006fcc6fde4001e80582ead538b2647ad23"
+  bootstrap_email: "admin@home.arpa"
+  bootstrap_password_hash: "pbkdf2_sha256$1000000$NnmLumyXLzf5Wy1K5HqzyZ$LGzdk9kW3tpbA+JnHsc1T3+ddlBUak0mX0GC2TWOd9c="
+  log_level: info
+  error_reporting:
+    enabled: false
+  postgresql:
+    host: "authentik-postgresql"
+    name: authentik
+    user: authentik
+    password: "379f70e7fa3371706713c2574ebba614"
+    port: 5432
+  web:
+    path: /
+
+server:
+  replicas: 1
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - auth.home.arpa
+    tls:
+      - secretName: default-tls-cert
+        hosts:
+          - auth.home.arpa
+  resources:
+    requests:
+      cpu: 100m
+      memory: 384Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+worker:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+postgresql:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: library/postgres
+    tag: "17"
+  auth:
+    username: authentik
+    database: authentik
+    password: "379f70e7fa3371706713c2574ebba614"
+  primary:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    persistence:
+      enabled: true
+      size: 1Gi

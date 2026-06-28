@@ -31,6 +31,8 @@ repositories:
     url: https://charts.jetstack.io
   - name: jameswynn
     url: https://jameswynn.github.io/helm-charts
+  - name: goauthentik
+    url: https://charts.goauthentik.io
 
 
 releases:
@@ -149,3 +151,19 @@ releases:
     version: 87.0.0
     values:
       - ./values/prometheus.values.yaml
+  - name: authentik-blueprints
+    namespace: authentik
+    chart: ./manifests/authentik-blueprints
+    needs:
+      - kube-system/leaf-cert
+  - name: authentik
+    namespace: authentik
+    createNamespace: true
+    chart: goauthentik/authentik
+    version: 2026.5.3
+    needs:
+      - cert-manager/root-ca-bootstrap
+      - kube-system/leaf-cert
+      - authentik/authentik-blueprints
+    values:
+      - ./values/authentik.values.yaml
