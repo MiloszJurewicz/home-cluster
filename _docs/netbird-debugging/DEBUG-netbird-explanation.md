@@ -16,6 +16,3 @@ Step 3 — NetBird's forward ACL filter inspects the packet. It has two accept r
 SSH and port 3001 work because kube-proxy doesn't DNAT them and doesn't add the 0x4000 mark. NetBird's original rules match the unmodified packets.
 
 The fix adds two rules before the drop in NetBird's routing-forward chain that accept traffic to and from the pod network (10.42.0.0/16) regardless of marks or original destination.
-
----
-Now let me save the fix to a proper location and prepare for a clean reset:
