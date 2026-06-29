@@ -1,0 +1,14 @@
+# NetBird → k3s pod network forwarding fix
+#
+# Problem: NetBird's ACL filter drops forwarded traffic from wt0 when
+# kube-proxy has modified it (DNAT changes destination, adds mark 0x4000).
+# NetBird's accept rules check for exact mark (0x0001bd20) and original
+# destination (192.168.0.0/24), both of which no longer match.
+#
+# Fix: Accept traffic to/from the pod network (10.42.0.0/16) in NetBird's
+# routing-forward chain, before the drop rule.
+#
+# Apply: sudo nft -f scripts/netbird-k3s-fix.nft
+
+add rule ip netbird netbird-rt-fwd ip daddr 10.42.0.0/16 accept
+add rule ip netbird netbird-rt-fwd ip saddr 10.42.0.0/16 accept

@@ -23,8 +23,6 @@ repositories:
     url: https://grafana.github.io/helm-charts
   - name: mojo2600
     url: https://mojo2600.github.io/pihole-kubernetes/
-  - name: metallb
-    url: https://metallb.github.io/metallb
   - name : external-dns
     url: https://kubernetes-sigs.github.io/external-dns/
   - name: jetstack
@@ -36,17 +34,6 @@ repositories:
 
 
 releases:
-  - name: metallb
-    namespace: metallb-system
-    chart: metallb/metallb
-    version: 0.16.1
-  - name: metallb-pool
-    needs:
-      - metallb
-    namespace: metallb-system
-    chart: ./charts/metallb-pool
-    values:
-      - ./values/metallb-pool.values.yaml
   - name: pihole-admin-secret
     namespace: pihole
     chart: ./manifests/pihole-admin-secret

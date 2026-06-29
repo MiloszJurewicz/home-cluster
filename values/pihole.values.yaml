@@ -7,15 +7,20 @@ admin:
   passwordKey: password
 
 serviceWeb:
-  annotations:
-    metallb.universe.tf/address-pool: pihole-pool
-    metallb.universe.tf/loadBalancerIPs: 192.168.0.51
-    metallb.universe.tf/allow-shared-ip: pihole-svc
-  type: LoadBalancer
+  # ClusterIP — routed through Traefik IngressRoute
+  type: ClusterIP
 
 serviceDns:
-  annotations:
-    metallb.universe.tf/address-pool: pihole-pool
-    metallb.universe.tf/loadBalancerIPs: 192.168.0.52
-    metallb.universe.tf/allow-shared-ip: pihole-svc
+  # LoadBalancer — ServiceLB binds hostPort 53
   type: LoadBalancer
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  hosts:
+    - pihole.home.arpa
+  tls:
+    - hosts:
+        - pihole.home.arpa
+  path: /
+  pathType: ImplementationSpecific

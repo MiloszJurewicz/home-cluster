@@ -1,0 +1,4 @@
+.terraform/
+*.tfvars
+netbird.auto.tfvars.json
+!terraform.tfvars.example

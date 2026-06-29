@@ -6,3 +6,11 @@ cert-pull:
 	bw get notes bb363f30-fc76-410a-b0e4-b477017646b8 > certs/root-ca.key
 	chmod 600 certs/root-ca.key
 	@echo "Done: certs/root-ca.crt, certs/root-ca.key"
+
+# Write Netbird PAT from Bitwarden to terraform/netbird/netbird.auto.tfvars.json
+netbird-pat:
+	@scripts/netbird-pat.sh
+
+# Apply nft rules so Netbird-routed traffic reaches k3s pods
+netbird-k3s-fix:
+	sudo nft -f scripts/netbird-k3s-fix.nft
