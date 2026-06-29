@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sI *)",
+      "Bash(helm show *)",
+      "Bash(systemctl is-active *)",
+      "Bash(terraform validate *)",
+      "Bash(curl -sk *)",
+      "Bash(curl -sv *)",
+      "Bash(kubectl describe *)",
+      "Bash(helm list *)",
+      "Bash(helm ls *)",
+      "Bash(helm get *)",
+      "Bash(helm history *)",
+      "Bash(terraform plan *)",
+      "Bash(terraform providers *)",
+      "Bash(terraform show *)"
+    ]
+  }
+}
