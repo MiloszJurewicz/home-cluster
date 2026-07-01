@@ -1,0 +1,1 @@
+Technitium helm is git cloned from remote, see if it can be directly references using github url
