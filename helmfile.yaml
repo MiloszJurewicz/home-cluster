@@ -21,8 +21,6 @@ repositories:
     url: https://prometheus-community.github.io/helm-charts
   - name: grafana
     url: https://grafana.github.io/helm-charts
-  - name: mojo2600
-    url: https://mojo2600.github.io/pihole-kubernetes/
   - name : external-dns
     url: https://kubernetes-sigs.github.io/external-dns/
   - name: jetstack
@@ -34,28 +32,23 @@ repositories:
 
 
 releases:
-  - name: pihole-admin-secret
-    namespace: pihole
-    chart: ./manifests/pihole-admin-secret
-  - name: pihole-admin-secret-kube-system
-    namespace: kube-system
-    chart: ./manifests/pihole-admin-secret
-  - name: pihole
-    needs:
-      - pihole-admin-secret
-    namespace: pihole
-    chart: mojo2600/pihole
-    version: 2.36.0
-    values:
-      - ./values/pihole.values.yaml
   - name: external-dns
     needs:
-      - pihole-admin-secret-kube-system
+      - kube-system/technitium-tsig-secret
     namespace: kube-system
     chart: external-dns/external-dns
     version: 1.21.1
     values:
       - ./values/external-dns.values.yaml
+  - name: technitium-tsig-secret
+    namespace: kube-system
+    chart: ./manifests/technitium-tsig-secret
+  - name: technitium
+    namespace: dns
+    createNamespace: true
+    chart: ./charts/technitium-dns
+    values:
+      - ./values/technitium.values.yaml
   - name: cert-manager
     namespace: cert-manager
     createNamespace: true

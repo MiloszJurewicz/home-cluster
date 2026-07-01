@@ -1,6 +1,0 @@
-# Default values for metallb-pool.
-# This file is intentionally empty or contains defaults.
-# Actual configuration is managed in values/metallb-pool.values.yaml via Helmfile.
-pools: []
-advertisements: []
-

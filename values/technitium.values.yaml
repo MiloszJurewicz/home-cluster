@@ -1,0 +1,54 @@
+replicaCount: 1
+
+image:
+  repository: technitium/dns-server
+  tag: ""
+  pullPolicy: IfNotPresent
+
+dnsServer:
+  domain: dns-server
+  adminPassword: admin1
+  preferIPv6: false
+  webServiceHttpPort: 5380
+  webServiceHttpsPort: 53443
+  webServiceEnableHttp: true
+  webServiceEnableHttps: false
+  forwarders: "1.1.1.1, 8.8.8.8"
+  forwarderProtocol: Tcp
+  enableBlocking: false
+  blockListUrls: ""
+
+service:
+  web:
+    type: ClusterIP
+    externalTrafficPolicy: ""
+    port: 5380
+  dns:
+    type: LoadBalancer
+    externalTrafficPolicy: ""
+  dnsTls:
+    enabled: false
+  dnsHttps:
+    enabled: false
+
+ingress:
+  enabled: true
+  className: traefik
+  hosts:
+    - host: dns.home.arpa
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - hosts:
+        - dns.home.arpa
+
+persistence:
+  enabled: true
+  storageClass: local-path
+  size: 1Gi
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

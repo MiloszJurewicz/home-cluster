@@ -1,0 +1,5 @@
+apiVersion: v2
+name: technitium-tsig-secret
+description: Auto-generated TSIG secret for external-dns → Technitium
+type: application
+version: 0.1.0
